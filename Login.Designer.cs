@@ -1,4 +1,4 @@
-﻿namespace NeverwhereInjector1
+﻿namespace NowhereInjector1
 {
     partial class Login
     {

@@ -1,0 +1,15 @@
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereInjector1.csproj.AssemblyReference.cache
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereInjector1.Form1.resources
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereInjector1.Login.resources
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereInjector1.ScriptHub.resources
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereInjector1.Updates.resources
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereInjector1.Properties.Resources.resources
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereInjector1.csproj.GenerateResource.cache
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereInjector1.csproj.CoreCompileInputs.cache
+C:\Users\naman\Desktop\nowhere\bin\Release\NowhereInjector1.exe.config
+C:\Users\naman\Desktop\nowhere\bin\Release\NowhereInjector1.exe
+C:\Users\naman\Desktop\nowhere\bin\Release\NowhereInjector1.pdb
+C:\Users\naman\Desktop\nowhere\bin\Release\FastColoredTextBox.dll
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereI.7B79C4F9.Up2Date
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereInjector1.exe
+C:\Users\naman\Desktop\nowhere\obj\x64\Release\NowhereInjector1.pdb

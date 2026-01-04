@@ -8,13 +8,12 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeAreDevs_API;
 
 namespace NowhereInjector1
 {
     public partial class ScriptHub : Form
     {
-        ExploitAPI module = new ExploitAPI();
+        // Removed legacy API reference
         public ScriptHub()
         {
             InitializeComponent();
