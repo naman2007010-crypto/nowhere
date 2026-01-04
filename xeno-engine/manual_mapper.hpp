@@ -3,6 +3,7 @@
 // Bypasses module detection by not appearing in PEB
 
 #pragma once
+#include "thread_hijack.hpp"
 #include <Windows.h>
 #include <cstdint>
 #include <fstream>
@@ -230,7 +231,8 @@ inline bool ResolveImports(HANDLE hProcess, uintptr_t targetBase,
   return true;
 }
 
-// Execute DllMain in target (using CreateRemoteThread)
+// Execute DllMain in target using thread hijacking (stealth method)
+// Falls back to CreateRemoteThread if hijacking fails
 inline bool ExecuteEntry(HANDLE hProcess, uintptr_t entryPoint,
                          uintptr_t dllBase) {
   // Create shellcode that calls DllMain(hModule, DLL_PROCESS_ATTACH, nullptr)
@@ -268,12 +270,30 @@ inline bool ExecuteEntry(HANDLE hProcess, uintptr_t entryPoint,
   WriteProcessMemory(hProcess, (LPVOID)shellcodeAddr, shellcode,
                      sizeof(shellcode), nullptr);
 
-  // Execute
+  // ===========================================================================
+  // TRY THREAD HIJACKING FIRST (Stealth - bypasses CreateRemoteThread
+  // detection)
+  // ===========================================================================
+
+  bool hijackSuccess = hijack::ExecuteViaHijack(hProcess, shellcodeAddr, 0);
+  if (hijackSuccess) {
+    VirtualFreeEx(hProcess, (LPVOID)shellcodeAddr, 0, MEM_RELEASE);
+    return true;
+  }
+  std::cout
+      << "[MAPPER] Thread hijacking failed, falling back to CreateRemoteThread"
+      << std::endl;
+
+  // ===========================================================================
+  // FALLBACK: CreateRemoteThread (Detected by Hyperion but works)
+  // ===========================================================================
   HANDLE hThread = CreateRemoteThread(hProcess, nullptr, 0,
                                       (LPTHREAD_START_ROUTINE)shellcodeAddr,
                                       nullptr, 0, nullptr);
-  if (hThread == nullptr)
+  if (hThread == nullptr) {
+    VirtualFreeEx(hProcess, (LPVOID)shellcodeAddr, 0, MEM_RELEASE);
     return false;
+  }
 
   // Wait for completion
   WaitForSingleObject(hThread, 5000);

@@ -10,8 +10,12 @@
 #include <psapi.h>
 #include <tlhelp32.h>
 
+#include "luau_compiler.hpp"
+#include "luau_functions.hpp"
 #include "manual_mapper.hpp"
+#include "offset_dumper.hpp"
 #include "roblox_utils.hpp"
+#include "thread_hijack.hpp"
 
 // Pattern scanning utility
 uintptr_t scan(const char *pattern, const char *mask) {
@@ -167,46 +171,52 @@ void execute(const char *script) {
   std::cout << "[NOWHERE] Executing script (" << scriptStr.length()
             << " bytes)..." << std::endl;
 
-  // Add to execution queue for thread-safe access
-  {
-    std::lock_guard<std::mutex> lock(queueMutex);
-    scriptQueue.push(scriptStr);
+  // Wrap script with error handling
+  std::string wrappedScript = compiler::WrapWithErrorHandler(scriptStr);
+
+  // ============================================================================
+  // ACTUAL SCRIPT EXECUTION
+  // ============================================================================
+
+  // Check if Luau functions are initialized
+  if (luau::r_luavm_load == nullptr) {
+    std::cout << "[NOWHERE] Initializing Luau function pointers..."
+              << std::endl;
+    if (!luau::Initialize()) {
+      std::cout << "[NOWHERE] ERROR: Failed to initialize Luau functions!"
+                << std::endl;
+      std::cout << "[NOWHERE] The internal offsets may be wrong for this "
+                   "Roblox version."
+                << std::endl;
+      return;
+    }
   }
 
-  // === SCRIPT EXECUTION LOGIC ===
-  //
-  // In a fully functional executor, this is where we would:
-  // 1. Find Roblox's internal loadstring/compile function via AOB scan
-  // 2. Create a new Luau thread from our deobfuscated lua_State
-  // 3. Compile the script to bytecode
-  // 4. Load the bytecode into the VM
-  // 5. Call lua_pcall to execute
-  //
-  // Example pseudo-code (requires actual function addresses):
-  //
-  // typedef int (*rloadstring_t)(uintptr_t L, const char* src, const char*
-  // name); typedef int (*rlua_pcall_t)(uintptr_t L, int nargs, int nresults,
-  // int errfunc);
-  //
-  // static rloadstring_t rloadstring = (rloadstring_t)FindLoadstring();
-  // static rlua_pcall_t rlua_pcall = (rlua_pcall_t)FindLuaPcall();
-  //
-  // if (rloadstring && rlua_pcall) {
-  //     if (rloadstring(luaState, scriptStr.c_str(), "=xeno") == 0) {
-  //         rlua_pcall(luaState, 0, 0, 0);
-  //     }
-  // }
-  //
-  // For now, we log the attempt. Full execution requires:
-  // - Verified AOB patterns for the current Roblox build
-  // - Proper thread creation and stack management
-  // - Error handling for compilation failures
+  // Execute using internal compiler
+  // Note: No SEH here since we're using std::string objects
+  // The compiler function has its own error handling
+  bool success =
+      compiler::ExecuteScriptInternal(luaState, wrappedScript, "@nowhere");
 
-  std::cout << "[NOWHERE] Script queued. Execution requires loadstring hook."
-            << std::endl;
-  std::cout << "[NOWHERE] To complete: Implement FindLoadstring() with correct "
-               "AOB pattern."
-            << std::endl;
+  if (success) {
+    std::cout << "[NOWHERE] Script loaded into VM successfully!" << std::endl;
+
+    // If using deferred execution (via task.spawn/defer), we're done
+    // The script will execute on the next Roblox heartbeat
+
+    // For immediate execution, we would need to call Luau_Execute
+    // But this is risky without proper stack management
+    // if (luau::r_luau_execute) {
+    //   luau::r_luau_execute((luau::lua_State*)luaState);
+    // }
+
+    std::cout << "[NOWHERE] Script execution initiated!" << std::endl;
+  } else {
+    std::cout << "[NOWHERE] Script execution failed!" << std::endl;
+    std::cout << "[NOWHERE] This may be due to incorrect offsets for this "
+                 "Roblox version."
+              << std::endl;
+  }
 }
 
 // Get current lua_State (for external use)

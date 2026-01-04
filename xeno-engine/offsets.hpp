@@ -1,6 +1,6 @@
 // Roblox Version: version-f8f53a67efca4c34
-// Source: config.hscl by @99tracheae
-// https://offsets.ntgetwritewatch.workers.dev/
+// Source: https://offsets.ntgetwritewatch.workers.dev/
+// Verified: January 4, 2026 (All offsets match official worker source)
 
 #pragma once
 #include <Windows.h>
@@ -9,139 +9,204 @@
 #define REBASE(x) (x + reinterpret_cast<uintptr_t>(GetModuleHandle(nullptr)))
 
 namespace offsets {
-// === Instance Structure ===
-constexpr uintptr_t Instance_This = 0x8;
-constexpr uintptr_t Instance_Name = 0xB0;
-constexpr uintptr_t Instance_Parent = 0x68;
-constexpr uintptr_t Instance_Children = 0x70;
-constexpr uintptr_t Instance_ClassDescriptor = 0x18;
+inline constexpr uintptr_t Adornee = 0xD0;
+inline constexpr uintptr_t Anchored = 0x1AE;
+inline constexpr uintptr_t AnchoredMask = 0x4;
+inline constexpr uintptr_t AnimationId = 0xD0;
+inline constexpr uintptr_t AttributeToNext = 0x58;
+inline constexpr uintptr_t AttributeToValue = 0x18;
+inline constexpr uintptr_t AutoJumpEnabled = 0x1DB;
+inline constexpr uintptr_t BanningEnabled = 0x14C;
+inline constexpr uintptr_t BeamBrightness = 0x190;
+inline constexpr uintptr_t BeamColor = 0x120;
+inline constexpr uintptr_t BeamLightEmission = 0x19C;
+inline constexpr uintptr_t BeamLightInfuence = 0x1A0;
+inline constexpr uintptr_t CFrame = 0xC0;
+inline constexpr uintptr_t Camera = 0x450;
+inline constexpr uintptr_t CameraMaxZoomDistance = 0x2F0;
+inline constexpr uintptr_t CameraMinZoomDistance = 0x2F4;
+inline constexpr uintptr_t CameraMode = 0x2F8;
+inline constexpr uintptr_t CameraPos = 0x11C;
+inline constexpr uintptr_t CameraRotation = 0xF8;
+inline constexpr uintptr_t CameraSubject = 0xE8;
+inline constexpr uintptr_t CameraType = 0x158;
+inline constexpr uintptr_t CanCollide = 0x1AE;
+inline constexpr uintptr_t CanCollideMask = 0x8;
+inline constexpr uintptr_t CanTouch = 0x1AE;
+inline constexpr uintptr_t CanTouchMask = 0x20;
+inline constexpr uintptr_t CharacterAppearanceId = 0x298;
+inline constexpr uintptr_t Children = 0x70;
+inline constexpr uintptr_t ChildrenEnd = 0x8;
+inline constexpr uintptr_t ClassDescriptor = 0x18;
+inline constexpr uintptr_t ClassDescriptorToClassName = 0x8;
+inline constexpr uintptr_t ClickDetectorMaxActivationDistance = 0x100;
+inline constexpr uintptr_t ClockTime = 0x1B8;
+inline constexpr uintptr_t CreatorId = 0x188;
+inline constexpr uintptr_t DataModelDeleterPointer = 0x7D03630;
+inline constexpr uintptr_t DataModelPrimitiveCount = 0x440;
+inline constexpr uintptr_t DataModelToRenderView1 = 0x1D0;
+inline constexpr uintptr_t DataModelToRenderView2 = 0x8;
+inline constexpr uintptr_t DataModelToRenderView3 = 0x28;
+inline constexpr uintptr_t DecalTexture = 0x198;
+inline constexpr uintptr_t Deleter = 0x10;
+inline constexpr uintptr_t DeleterBack = 0x18;
+inline constexpr uintptr_t Dimensions = 0x720;
+inline constexpr uintptr_t DisplayName = 0x130;
+inline constexpr uintptr_t EvaluateStateMachine = 0x1DD;
+inline constexpr uintptr_t FFlagList = 0x7A85738;
+inline constexpr uintptr_t FFlagToValueGetSet = 0x30;
+inline constexpr uintptr_t FOV = 0x160;
+inline constexpr uintptr_t FakeDataModelPointer = 0x7D03628;
+inline constexpr uintptr_t FakeDataModelToDataModel = 0x1C0;
+inline constexpr uintptr_t FogColor = 0xFC;
+inline constexpr uintptr_t FogEnd = 0x134;
+inline constexpr uintptr_t FogStart = 0x138;
+inline constexpr uintptr_t ForceNewAFKDuration = 0x1F8;
+inline constexpr uintptr_t FramePositionOffsetX = 0x524;
+inline constexpr uintptr_t FramePositionOffsetY = 0x52C;
+inline constexpr uintptr_t FramePositionX = 0x520;
+inline constexpr uintptr_t FramePositionY = 0x528;
+inline constexpr uintptr_t FrameRotation = 0x188;
+inline constexpr uintptr_t FrameSizeOffsetX = 0x548;
+inline constexpr uintptr_t FrameSizeOffsetY = 0x54C;
+inline constexpr uintptr_t FrameSizeX = 0x540;
+inline constexpr uintptr_t FrameSizeY = 0x544;
+inline constexpr uintptr_t FrameVisible = 0x5B9;
+inline constexpr uintptr_t GameId = 0x190;
+inline constexpr uintptr_t GameLoaded = 0x638;
+inline constexpr uintptr_t Gravity = 0x9B0;
+inline constexpr uintptr_t Health = 0x194;
+inline constexpr uintptr_t HealthDisplayDistance = 0x318;
+inline constexpr uintptr_t HipHeight = 0x1A0;
+inline constexpr uintptr_t HumanoidDisplayName = 0xD0;
+inline constexpr uintptr_t HumanoidState = 0x8D8;
+inline constexpr uintptr_t HumanoidStateId = 0x20;
+inline constexpr uintptr_t InputObject = 0x100;
+inline constexpr uintptr_t InsetMaxX = 0x100;
+inline constexpr uintptr_t InsetMaxY = 0x104;
+inline constexpr uintptr_t InsetMinX = 0xF8;
+inline constexpr uintptr_t InsetMinY = 0xFC;
+inline constexpr uintptr_t InstanceAttributePointer1 = 0x48;
+inline constexpr uintptr_t InstanceAttributePointer2 = 0x18;
+inline constexpr uintptr_t InstanceCapabilities = 0x578;
+inline constexpr uintptr_t JobEnd = 0x1D8;
+inline constexpr uintptr_t JobId = 0x138;
+inline constexpr uintptr_t JobStart = 0x1D0;
+inline constexpr uintptr_t Job_Name = 0x18;
+inline constexpr uintptr_t JobsPointer = 0x7E1CD60;
+inline constexpr uintptr_t JumpPower = 0x1B0;
+inline constexpr uintptr_t LocalPlayer = 0x130;
+inline constexpr uintptr_t LocalScriptByteCode = 0x1A8;
+inline constexpr uintptr_t LocalScriptBytecodePointer = 0x10;
+inline constexpr uintptr_t LocalScriptHash = 0x1B8;
+inline constexpr uintptr_t MaterialType = 0x226;
+inline constexpr uintptr_t MaxHealth = 0x1B4;
+inline constexpr uintptr_t MaxSlopeAngle = 0x1B8;
+inline constexpr uintptr_t MeshPartColor3 = 0x194;
+inline constexpr uintptr_t MeshPartTexture = 0x310;
+inline constexpr uintptr_t ModelInstance = 0x360;
+inline constexpr uintptr_t ModuleScriptByteCode = 0x150;
+inline constexpr uintptr_t ModuleScriptBytecodePointer = 0x10;
+inline constexpr uintptr_t ModuleScriptHash = 0x160;
+inline constexpr uintptr_t MoonTextureId = 0xE0;
+inline constexpr uintptr_t MousePosition = 0xEC;
+inline constexpr uintptr_t MouseSensitivity = 0x7DAF110;
+inline constexpr uintptr_t MoveDirection = 0x158;
+inline constexpr uintptr_t Name = 0xB0;
+inline constexpr uintptr_t NameDisplayDistance = 0x324;
+inline constexpr uintptr_t NameSize = 0x10;
+inline constexpr uintptr_t OnDemandInstance = 0x40;
+inline constexpr uintptr_t OutdoorAmbient = 0x108;
+inline constexpr uintptr_t Parent = 0x68;
+inline constexpr uintptr_t PartSize = 0x1B0;
+inline constexpr uintptr_t Ping = 0xCC;
+inline constexpr uintptr_t PlaceId = 0x198;
+inline constexpr uintptr_t PlayerConfigurerPointer = 0x7CE11E8;
+inline constexpr uintptr_t PlayerMouse = 0xCD8;
+inline constexpr uintptr_t Position = 0xE4;
+inline constexpr uintptr_t Primitive = 0x148;
+inline constexpr uintptr_t PrimitiveValidateValue = 0x6;
+inline constexpr uintptr_t PrimitivesPointer1 = 0x3C8;
+inline constexpr uintptr_t PrimitivesPointer2 = 0x240;
+inline constexpr uintptr_t ProximityPromptActionText = 0xD0;
+inline constexpr uintptr_t ProximityPromptEnabled = 0x156;
+inline constexpr uintptr_t ProximityPromptGamepadKeyCode = 0x13C;
+inline constexpr uintptr_t ProximityPromptHoldDuraction = 0x140;
+inline constexpr uintptr_t ProximityPromptMaxActivationDistance = 0x148;
+inline constexpr uintptr_t ProximityPromptMaxObjectText = 0xF0;
+inline constexpr uintptr_t RenderJobToDataModel = 0x1B0;
+inline constexpr uintptr_t RenderJobToFakeDataModel = 0x38;
+inline constexpr uintptr_t RenderJobToRenderView = 0x218;
+inline constexpr uintptr_t RequireBypass = 0x0;
+inline constexpr uintptr_t RigType = 0x1C8;
+inline constexpr uintptr_t RootPartR15 = 0x620;
+inline constexpr uintptr_t RootPartR6 = 0x4C0;
+inline constexpr uintptr_t Rotation = 0xC8;
+inline constexpr uintptr_t RunContext = 0x148;
+inline constexpr uintptr_t Sandboxed = 0xC5;
+inline constexpr uintptr_t ScreenGuiEnabled = 0x515;
+inline constexpr uintptr_t ScriptContext = 0x3F0; // Updated from 0x3E0
+inline constexpr uintptr_t Sit = 0x1DC;
+inline constexpr uintptr_t SkyboxBk = 0x110;
+inline constexpr uintptr_t SkyboxDn = 0x140;
+inline constexpr uintptr_t SkyboxFt = 0x170;
+inline constexpr uintptr_t SkyboxLf = 0x1A0;
+inline constexpr uintptr_t SkyboxRt = 0x1D0;
+inline constexpr uintptr_t SkyboxUp = 0x200;
+inline constexpr uintptr_t SoundId = 0xE0;
+inline constexpr uintptr_t StarCount = 0x260;
+inline constexpr uintptr_t StringLength = 0x10;
+inline constexpr uintptr_t SunTextureId = 0x230;
+inline constexpr uintptr_t TagList = 0x0;
+inline constexpr uintptr_t TaskSchedulerMaxFPS = 0x1B0;
+inline constexpr uintptr_t TaskSchedulerPointer = 0x7E1CB88;
+inline constexpr uintptr_t Team = 0x270;
+inline constexpr uintptr_t TeamColor = 0xD0;
+inline constexpr uintptr_t TextLabelText = 0xAE0;
+inline constexpr uintptr_t TextLabelVisible = 0x5B9;
+inline constexpr uintptr_t Tool_Grip_Position = 0x484;
+inline constexpr uintptr_t Transparency = 0xF0;
+inline constexpr uintptr_t UserId = 0x2A8;
+inline constexpr uintptr_t Value = 0xD0;
+inline constexpr uintptr_t ValueGetSetToValue = 0xC0;
+inline constexpr uintptr_t Velocity = 0xF0;
+inline constexpr uintptr_t ViewportSize = 0x2E8;
+inline constexpr uintptr_t VisualEngine = 0x10;
+inline constexpr uintptr_t VisualEnginePointer = 0x7A69470;
+inline constexpr uintptr_t VisualEngineToDataModel1 = 0x700;
+inline constexpr uintptr_t VisualEngineToDataModel2 = 0x1C0;
+inline constexpr uintptr_t WalkSpeed = 0x1D4;
+inline constexpr uintptr_t WalkSpeedCheck = 0x3C0;
+inline constexpr uintptr_t Workspace = 0x178;
+inline constexpr uintptr_t WorkspaceToWorld = 0x3C8;
+inline constexpr uintptr_t viewmatrix = 0x4B0;
 
-// === ScriptContext (CRITICAL) ===
-constexpr uintptr_t ScriptContext_Luastate = 0x3E0;
-// Note: LuastateObfuscation = VMC (needs deobfuscation)
+// Aliases for backward compatibility
+inline constexpr uintptr_t Instance_Name = Name;
+inline constexpr uintptr_t Instance_Parent = Parent;
+inline constexpr uintptr_t Instance_Children = Children;
+inline constexpr uintptr_t Instance_ClassDescriptor = ClassDescriptor;
+inline constexpr uintptr_t FakeDatamodel_Datamodel = FakeDataModelToDataModel;
+inline constexpr uintptr_t Players_LocalPlayer = LocalPlayer;
+inline constexpr uintptr_t Player_Character = ModelInstance;
+inline constexpr uintptr_t BasePart_Primitive = Primitive;
+inline constexpr uintptr_t Primitive_CFrame = CFrame;
+inline constexpr uintptr_t Workspace_CurrentCamera = Camera;
+inline constexpr uintptr_t Humanoid_Health = Health;
+inline constexpr uintptr_t Humanoid_MaxHealth = MaxHealth;
+inline constexpr uintptr_t ScriptContext_Luastate = 0x10;
 
-// === Players ===
-constexpr uintptr_t Players_LocalPlayer = 0x130;
-
-// === Player ===
-constexpr uintptr_t Player_Character = 0x360;
-constexpr uintptr_t Player_UserId = 0x2A8;
-constexpr uintptr_t Player_DisplayName = 0x130;
-constexpr uintptr_t Player_Mouse = 0xCD8;
-
-// === Humanoid ===
-constexpr uintptr_t Humanoid_Health = 0x194;
-constexpr uintptr_t Humanoid_MaxHealth = 0x1B4;
-constexpr uintptr_t Humanoid_WalkSpeed0 = 0x1D4;
-constexpr uintptr_t Humanoid_WalkSpeed1 = 0x3C0;
-constexpr uintptr_t Humanoid_JumpPower = 0x1B0;
-constexpr uintptr_t Humanoid_HipHeight = 0x1A0;
-
-// === Camera ===
-constexpr uintptr_t Camera_CFrame = 0xF8;
-constexpr uintptr_t Camera_Focus = 0x128;
-constexpr uintptr_t Camera_FOV = 0x160;
-
-// === Workspace ===
-constexpr uintptr_t Workspace_CurrentCamera = 0x450;
-constexpr uintptr_t Workspace_GravityInfo = 0x3C8;
-constexpr uintptr_t GravityInfo_Gravity = 0x1D0;
-
-// === BasePart / Primitive ===
-constexpr uintptr_t BasePart_Primitive = 0x148;
-constexpr uintptr_t Primitive_CFrame = 0xC0;
-constexpr uintptr_t Primitive_Size = 0x1B0;
-constexpr uintptr_t Primitive_Anchored = 0xD71;
-constexpr uintptr_t Primitive_CanCollide = 0xB1F;
-
-// === Script ===
-constexpr uintptr_t Script_EmbeddedSource = 0x1A8;
-constexpr uintptr_t LocalScript_EmbeddedSource = 0x1A8;
-constexpr uintptr_t ModuleScript_EmbeddedSource = 0x150;
-constexpr uintptr_t EmbeddedSource_Bytecode = 0x10;
-
-// === DataModel ===
-constexpr uintptr_t FakeDataModelPointer =
-    0x588FC38; // Matches class_addresses::DataModel
-constexpr uintptr_t FakeDatamodel_Datamodel = 0x1C0;
 } // namespace offsets
 
-namespace lua_types {
-// Lua type identifiers
-constexpr int LUA_TNIL = 0;
-constexpr int LUA_TBOOLEAN = 1;
-constexpr int LUA_TNUMBER = 3;
-constexpr int LUA_TVECTOR = 4;
-constexpr int LUA_TSTRING = 5;
-constexpr int LUA_TTABLE = 6;
-constexpr int LUA_TFUNCTION = 7;
-constexpr int LUA_TUSERDATA = 8;
-constexpr int LUA_TTHREAD = 9;
-constexpr int LUA_TBUFFER = 10;
-} // namespace lua_types
-
 namespace lua_offsets {
-// === Lua Table ===
-constexpr uintptr_t Table_TValueSize = 0x10;
-constexpr uintptr_t Table_Array = 0x28;
-constexpr uintptr_t Table_Node = 0x10;
-constexpr uintptr_t Table_Metatable = 0x20;
-constexpr uintptr_t Table_IsFrozen = 0x7;
-
-// === Lua Userdata ===
-constexpr uintptr_t Userdata_Metatable = 0x8;
-constexpr uintptr_t Userdata_Size = 0x4;
-constexpr uintptr_t Userdata_Data = 0x10;
-
-// === Lua String ===
-constexpr uintptr_t String_Data = 0x18;
-constexpr uintptr_t String_Length = 0x14;
-
-// === Lua Buffer ===
-constexpr uintptr_t Buffer_Data = 0x8;
-constexpr uintptr_t Buffer_Length = 0x4;
-
 // === lua_State ===
-constexpr uintptr_t Luastate_Namecall = 0x10;
-constexpr uintptr_t Luastate_GlobalTable = 0x20;
-constexpr uintptr_t Luastate_ExtraSpace = 0x8;
-constexpr uintptr_t Luastate_Global = 0x48;
-
-// === Closure ===
-constexpr uintptr_t Closure_Proto = 0x18;
-
-// === Proto ===
-constexpr uintptr_t Proto_DebugName = 0x68;
-constexpr uintptr_t Proto_Capabilities = 0x30;
-constexpr uintptr_t Proto_Constant = 0x8;
-constexpr uintptr_t Proto_ConstantSize = 0x88;
-
-// === Global State ===
-constexpr uintptr_t GlobalState_Registry = 0xC90;
-constexpr uintptr_t GlobalState_Luastate = 0xB10;
-constexpr uintptr_t GlobalState_TypeMetatables = 0xB28;
+inline constexpr uintptr_t Luastate_Namecall = 0x10;
+inline constexpr uintptr_t Luastate_GlobalTable = 0x20;
+inline constexpr uintptr_t Luastate_ExtraSpace = 0x8;
+inline constexpr uintptr_t Luastate_Global = 0x48;
 
 // === ExtraSpace ===
-constexpr uintptr_t ExtraSpace_Script = 0x80;
-constexpr uintptr_t ExtraSpace_Capabilities = 0x50;
-constexpr uintptr_t ExtraSpace_Identity = 0x30;
+inline constexpr uintptr_t ExtraSpace_Script = 0x80;
+inline constexpr uintptr_t ExtraSpace_Capabilities = 0x50;
+inline constexpr uintptr_t ExtraSpace_Identity = 0x30;
 } // namespace lua_offsets
-
-namespace class_addresses {
-// Static class descriptor addresses (REBASE these!)
-constexpr uintptr_t ScriptContext = 0x57CB488;
-constexpr uintptr_t Players = 0x58FDEE0;
-constexpr uintptr_t Workspace = 0x58D4208;
-constexpr uintptr_t DataModel = 0x588FC38;
-constexpr uintptr_t CoreGui = 0x590D7E8;
-constexpr uintptr_t LocalScript = 0x580F978;
-constexpr uintptr_t ModuleScript = 0x57F4AF8;
-constexpr uintptr_t RunService = 0x58CFB20;
-constexpr uintptr_t UserInputService = 0x58CB8D8;
-constexpr uintptr_t HttpService = 0x5899220;
-constexpr uintptr_t TeleportService = 0x58D2978;
-constexpr uintptr_t ReplicatedStorage = 0x58D92E0;
-constexpr uintptr_t Lighting = 0x58A1B38;
-constexpr uintptr_t Camera = 0x5893860;
-constexpr uintptr_t Humanoid = 0x57CD768;
-} // namespace class_addresses
