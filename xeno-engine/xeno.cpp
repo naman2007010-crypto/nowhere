@@ -10,6 +10,7 @@
 #include <psapi.h>
 #include <tlhelp32.h>
 
+#include "manual_mapper.hpp"
 #include "roblox_utils.hpp"
 
 // Pattern scanning utility
@@ -163,21 +164,76 @@ void execute(const char *script) {
   }
 
   std::string scriptStr(script);
+  std::cout << "[NOWHERE] Executing script (" << scriptStr.length()
+            << " bytes)..." << std::endl;
 
-  // Add to execution queue
+  // Add to execution queue for thread-safe access
   {
     std::lock_guard<std::mutex> lock(queueMutex);
     scriptQueue.push(scriptStr);
   }
 
-  std::cout << "[NOWHERE] Executing script (" << scriptStr.length()
-            << " bytes)..." << std::endl;
+  // === SCRIPT EXECUTION LOGIC ===
+  //
+  // In a fully functional executor, this is where we would:
+  // 1. Find Roblox's internal loadstring/compile function via AOB scan
+  // 2. Create a new Luau thread from our deobfuscated lua_State
+  // 3. Compile the script to bytecode
+  // 4. Load the bytecode into the VM
+  // 5. Call lua_pcall to execute
+  //
+  // Example pseudo-code (requires actual function addresses):
+  //
+  // typedef int (*rloadstring_t)(uintptr_t L, const char* src, const char*
+  // name); typedef int (*rlua_pcall_t)(uintptr_t L, int nargs, int nresults,
+  // int errfunc);
+  //
+  // static rloadstring_t rloadstring = (rloadstring_t)FindLoadstring();
+  // static rlua_pcall_t rlua_pcall = (rlua_pcall_t)FindLuaPcall();
+  //
+  // if (rloadstring && rlua_pcall) {
+  //     if (rloadstring(luaState, scriptStr.c_str(), "=xeno") == 0) {
+  //         rlua_pcall(luaState, 0, 0, 0);
+  //     }
+  // }
+  //
+  // For now, we log the attempt. Full execution requires:
+  // - Verified AOB patterns for the current Roblox build
+  // - Proper thread creation and stack management
+  // - Error handling for compilation failures
 
-  std::cout << "[NOWHERE] Script execution initiated." << std::endl;
+  std::cout << "[NOWHERE] Script queued. Execution requires loadstring hook."
+            << std::endl;
+  std::cout << "[NOWHERE] To complete: Implement FindLoadstring() with correct "
+               "AOB pattern."
+            << std::endl;
 }
 
 // Get current lua_State (for external use)
 uintptr_t GetLuaState() { return luaState; }
+
+// Inject DLL into a target process using manual mapping
+bool InjectIntoProcess(DWORD processId, const wchar_t *dllPath) {
+  HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId);
+  if (!hProcess) {
+    std::cout << "[NOWHERE] ERROR: Could not open process " << processId
+              << std::endl;
+    return false;
+  }
+
+  std::wstring path(dllPath);
+  mapper::MappedDll result = mapper::MapDll(hProcess, path);
+  CloseHandle(hProcess);
+
+  if (result.success) {
+    std::cout << "[NOWHERE] Successfully injected DLL at 0x" << std::hex
+              << result.base << std::endl;
+  } else {
+    std::cout << "[NOWHERE] ERROR: Manual mapping failed!" << std::endl;
+  }
+
+  return result.success;
+}
 
 } // namespace xeno
 
