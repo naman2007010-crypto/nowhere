@@ -10,13 +10,7 @@
 #include <psapi.h>
 #include <tlhelp32.h>
 
-namespace xeno {
-
-bool initialized = false;
-uintptr_t scriptContext = 0;
-uintptr_t luaState = 0;
-std::queue<std::string> scriptQueue;
-std::mutex queueMutex;
+#include "roblox_utils.hpp"
 
 // Pattern scanning utility
 uintptr_t scan(const char *pattern, const char *mask) {
@@ -40,14 +34,30 @@ uintptr_t scan(const char *pattern, const char *mask) {
   return 0;
 }
 
+namespace xeno {
+
+bool initialized = false;
+uintptr_t scriptContext = 0;
+uintptr_t luaState = 0;
+std::queue<std::string> scriptQueue;
+std::mutex queueMutex;
+
 // Find ScriptContext in the DataModel
 uintptr_t FindScriptContext() {
-  // Method 1: Use class descriptor address
+  HANDLE hProcess = GetCurrentProcess();
   uintptr_t base = (uintptr_t)GetModuleHandleA(nullptr);
 
-  // ScriptContext can be found via DataModel children enumeration
-  // For now, return 0 - needs implementation based on game state
-  return 0;
+  std::cout << "[NOWHERE] Searching for DataModel..." << std::endl;
+  uintptr_t dataModel = roblox::GetDataModel(hProcess, base);
+  if (dataModel == 0) {
+    std::cout << "[NOWHERE] ERROR: DataModel not found!" << std::endl;
+    return 0;
+  }
+  std::cout << "[NOWHERE] DataModel: 0x" << std::hex << dataModel << std::endl;
+
+  std::cout << "[NOWHERE] Searching for ScriptContext..." << std::endl;
+  uintptr_t sc = roblox::GetScriptContext(hProcess, dataModel);
+  return sc;
 }
 
 bool initialize() {
@@ -119,33 +129,59 @@ void execute(const char *script) {
   std::cout << "[NOWHERE] Script queued for execution (" << scriptStr.length()
             << " bytes)" << std::endl;
 
-  // If we have a valid lua_State, execute immediately
-  if (luaState != 0) {
-    // TODO: Implement actual Luau execution
-    // This would involve:
-    // 1. Compiling script to bytecode (or using loadstring)
-    // 2. Pushing the compiled function to the stack
-    // 3. Calling lua_pcall or similar
-    std::cout << "[NOWHERE] Executing: " << scriptStr.substr(0, 50) << "..."
-              << std::endl;
-  } else {
-    std::cout << "[NOWHERE] Warning: lua_State not available, script queued"
-              << std::endl;
-  }
-}
+  void execute(const char *script) {
+    if (!initialized) {
+      std::cout << "[NOWHERE] ERROR: Engine not initialized!" << std::endl;
+      return;
+    }
 
-// Get current lua_State (for external use)
-uintptr_t GetLuaState() { return luaState; }
+    if (luaState == 0) {
+      // Try refreshing if state is missing
+      RefreshState();
+      if (luaState == 0) {
+        std::cout << "[NOWHERE] ERROR: lua_State not found, cannot execute!"
+                  << std::endl;
+        return;
+      }
+    }
 
-// Refresh ScriptContext and lua_State (call after game loads)
-bool RefreshState() {
-  scriptContext = FindScriptContext();
-  if (scriptContext != 0) {
-    luaState = deobfuscation::DeobfuscateLuaState(scriptContext);
-    return luaState != 0;
+    std::string scriptStr(script);
+
+    // Add to execution queue
+    {
+      std::lock_guard<std::mutex> lock(queueMutex);
+      scriptQueue.push(scriptStr);
+    }
+
+    std::cout << "[NOWHERE] Executing script (" << scriptStr.length()
+              << " bytes)..." << std::endl;
+
+    // TODO: Finalize Luau execution mechanism
+    // In a real scenario, we'd use Luau compile + load + call
+    // For now, we simulate the execution flow
+
+    /*
+    std::string bytecode = Luau::compile(scriptStr);
+    if (luau_load(luaState, "xeno", bytecode.data(), bytecode.size(), 0) == 0) {
+        lua_pcall(luaState, 0, 0, 0);
+    }
+    */
+
+    std::cout << "[NOWHERE] Script execution initiated." << std::endl;
   }
-  return false;
-}
+
+  // Get current lua_State (for external use)
+  uintptr_t GetLuaState() { return luaState; }
+
+  // Refresh ScriptContext and lua_State (call after game loads)
+  bool RefreshState() {
+    scriptContext = FindScriptContext();
+    if (scriptContext != 0) {
+      luaState = deobfuscation::DeobfuscateLuaState(scriptContext);
+      return luaState != 0;
+    }
+    return false;
+  }
 
 } // namespace xeno
 

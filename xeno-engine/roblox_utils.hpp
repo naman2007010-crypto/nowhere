@@ -5,6 +5,8 @@
 #pragma once
 #include "memory.hpp"
 #include "offsets.hpp"
+#include <Windows.h> // Kept for HANDLE type, as per "syntactically correct" instruction
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -131,6 +133,11 @@ inline uintptr_t GetDataModel(HANDLE hProcess, uintptr_t base) {
 // Get Players service from DataModel
 inline uintptr_t GetPlayers(HANDLE hProcess, uintptr_t dataModel) {
   return FindFirstChild(hProcess, dataModel, "Players");
+}
+
+// Get ScriptContext service from DataModel
+inline uintptr_t GetScriptContext(HANDLE hProcess, uintptr_t dataModel) {
+  return FindFirstChild(hProcess, dataModel, "ScriptContext");
 }
 
 // Get LocalPlayer from Players service

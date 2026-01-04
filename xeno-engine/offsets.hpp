@@ -61,6 +61,8 @@ constexpr uintptr_t ModuleScript_EmbeddedSource = 0x150;
 constexpr uintptr_t EmbeddedSource_Bytecode = 0x10;
 
 // === DataModel ===
+constexpr uintptr_t FakeDataModelPointer =
+    0x588FC38; // Matches class_addresses::DataModel
 constexpr uintptr_t FakeDatamodel_Datamodel = 0x1C0;
 } // namespace offsets
 
