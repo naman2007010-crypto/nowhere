@@ -40,9 +40,21 @@ namespace NowhereInjector1
         Point lastPoint;
         private void button1_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(scriptBox.Text))
+            {
+                MessageBox.Show("Please enter a script to execute.", "Nowhere");
+                return;
+            }
+
             XenoWrapper.execute(scriptBox.Text);
             execButton.FlatStyle = FlatStyle.Flat;
             execButton.FlatAppearance.BorderSize = 0;
+            
+            // Optionally refresh state if it fails
+            if (XenoWrapper.GetLuaState() == IntPtr.Zero)
+            {
+                XenoWrapper.RefreshState();
+            }
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -149,7 +161,11 @@ namespace NowhereInjector1
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            XenoWrapper.Inject();
+            if (XenoWrapper.Inject())
+            {
+                XenoWrapper.initialize();
+                MessageBox.Show("Xeno Engine initialized and ready!", "Nowhere");
+            }
         }
 
         private void killButton_Click(object sender, EventArgs e)

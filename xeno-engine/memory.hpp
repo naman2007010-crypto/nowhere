@@ -14,6 +14,18 @@
 #include <vector>
 
 
+// Define NTSTATUS if not available
+#ifndef NT_SUCCESS
+typedef LONG NTSTATUS;
+#define NT_SUCCESS(Status) (((NTSTATUS)(Status)) >= 0)
+#endif
+
+// Add NtReadVirtualMemory syscall stub for hardening
+extern "C" NTSTATUS NtReadVirtualMemory(HANDLE ProcessHandle, PVOID BaseAddress,
+                                        PVOID Buffer,
+                                        SIZE_T NumberOfBytesToRead,
+                                        PSIZE_T NumberOfBytesRead);
+
 namespace memory {
 
 #ifdef XENOENGINE_EXPORTS
@@ -28,12 +40,15 @@ template <typename T> inline T Read(HANDLE hProcess, uintptr_t address) {
   }
 }
 #else
-// External version (using ReadProcessMemory)
+// External version (using direct syscall for stealth)
 template <typename T> inline T Read(HANDLE hProcess, uintptr_t address) {
   T value{};
   if (address == 0)
     return value;
-  ReadProcessMemory(hProcess, (LPCVOID)address, &value, sizeof(T), nullptr);
+
+  SIZE_T bytesRead = 0;
+  // Using NtReadVirtualMemory instead of ReadProcessMemory for stealth
+  NtReadVirtualMemory(hProcess, (PVOID)address, &value, sizeof(T), &bytesRead);
   return value;
 }
 #endif
@@ -73,6 +88,7 @@ inline uintptr_t GetModuleBase(HANDLE hProcess, const wchar_t *moduleName) {
   HMODULE hModules[1024];
   DWORD cbNeeded;
 
+  // Use EnumProcessModulesEx from Psapi.h
   if (EnumProcessModulesEx(hProcess, hModules, sizeof(hModules), &cbNeeded,
                            LIST_MODULES_ALL)) {
     for (unsigned int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) {
@@ -119,9 +135,11 @@ inline std::string ReadRobloxString(HANDLE hProcess, uintptr_t stringPtr) {
   std::string result;
   result.resize(length);
 #ifdef XENOENGINE_EXPORTS
-  memcpy(&result[0], (void *)dataPtr, length);
+  memcpy(&result[0], (void *)dataPtr, (size_t)length);
 #else
-  ReadProcessMemory(hProcess, (LPCVOID)dataPtr, &result[0], length, nullptr);
+  SIZE_T bytesRead = 0;
+  NtReadVirtualMemory(hProcess, (PVOID)dataPtr, &result[0], (SIZE_T)length,
+                      &bytesRead);
 #endif
   return result;
 }
@@ -132,7 +150,12 @@ inline std::string ReadString(HANDLE hProcess, uintptr_t address,
   std::string result;
   result.resize(maxLen);
   SIZE_T bytesRead = 0;
-  ReadProcessMemory(hProcess, (LPCVOID)address, &result[0], maxLen, &bytesRead);
+#ifdef XENOENGINE_EXPORTS
+  memcpy(&result[0], (void *)address, maxLen);
+#else
+  NtReadVirtualMemory(hProcess, (PVOID)address, &result[0], (SIZE_T)maxLen,
+                      &bytesRead);
+#endif
 
   // Find null terminator
   size_t nullPos = result.find('\0');
@@ -152,8 +175,9 @@ inline std::vector<T> ReadArray(HANDLE hProcess, uintptr_t address,
 #ifdef XENOENGINE_EXPORTS
   memcpy(result.data(), (void *)address, count * sizeof(T));
 #else
-  ReadProcessMemory(hProcess, (LPCVOID)address, result.data(),
-                    count * sizeof(T), nullptr);
+  SIZE_T bytesRead = 0;
+  NtReadVirtualMemory(hProcess, (PVOID)address, result.data(),
+                      count * sizeof(T), &bytesRead);
 #endif
   return result;
 }
@@ -165,9 +189,11 @@ inline std::array<float, 16> ReadMatrix4x4(HANDLE hProcess, uintptr_t address) {
   if (address != 0)
     memcpy(matrix.data(), (void *)address, sizeof(float) * 16);
 #else
-  if (address != 0)
-    ReadProcessMemory(hProcess, (LPCVOID)address, matrix.data(),
-                      sizeof(float) * 16, nullptr);
+  if (address != 0) {
+    SIZE_T bytesRead = 0;
+    NtReadVirtualMemory(hProcess, (PVOID)address, matrix.data(),
+                        sizeof(float) * 16, &bytesRead);
+  }
 #endif
   return matrix;
 }

@@ -5,10 +5,11 @@
 #pragma once
 #include "memory.hpp"
 #include "offsets.hpp"
-#include <Windows.h> // Kept for HANDLE type, as per "syntactically correct" instruction
+#include <Windows.h>
 #include <iostream>
 #include <string>
 #include <vector>
+
 
 namespace roblox {
 
@@ -80,7 +81,7 @@ inline std::vector<uintptr_t> GetChildren(HANDLE hProcess, uintptr_t parent) {
   if (beginPtr == 0 || endPtr == 0 || endPtr < beginPtr)
     return children;
 
-  size_t count = (endPtr - beginPtr) / sizeof(uintptr_t);
+  size_t count = (size_t)((endPtr - beginPtr) / sizeof(uintptr_t));
   if (count > 10000)
     return children; // Sanity check
 

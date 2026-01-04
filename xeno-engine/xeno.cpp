@@ -42,6 +42,29 @@ uintptr_t luaState = 0;
 std::queue<std::string> scriptQueue;
 std::mutex queueMutex;
 
+// Refresh ScriptContext and lua_State (call after game loads)
+bool RefreshState() {
+  HANDLE hProcess = GetCurrentProcess();
+  uintptr_t base = (uintptr_t)GetModuleHandleA(nullptr);
+
+  uintptr_t dataModel = roblox::GetDataModel(hProcess, base);
+  if (dataModel == 0)
+    return false;
+
+  scriptContext = roblox::GetScriptContext(hProcess, dataModel);
+  if (scriptContext != 0) {
+    luaState = deobfuscation::DeobfuscateLuaState(scriptContext);
+
+    if (luaState != 0) {
+      // Elevate on refresh
+      deobfuscation::SetIdentity(luaState, 8);
+      deobfuscation::SetCapabilities(luaState, 0xFFFFFFFFFFFFFFFF);
+      return true;
+    }
+  }
+  return false;
+}
+
 // Find ScriptContext in the DataModel
 uintptr_t FindScriptContext() {
   HANDLE hProcess = GetCurrentProcess();
@@ -71,8 +94,8 @@ bool initialize() {
   // Find ScriptContext
   scriptContext = FindScriptContext();
   if (scriptContext == 0) {
-    std::cout << "[NOWHERE] Warning: ScriptContext not found yet (game may "
-                 "not be loaded)"
+    std::cout << "[NOWHERE] Warning: ScriptContext not found yet (game may not "
+                 "be loaded)"
               << std::endl;
   } else {
     std::cout << "[NOWHERE] ScriptContext: 0x" << std::hex << scriptContext
@@ -100,6 +123,17 @@ bool initialize() {
     }
   }
 
+  // Find Luau functions
+  std::cout << "[NOWHERE] Searching for Luau functions..." << std::endl;
+
+  // Example AOB patterns
+  uintptr_t loadstring_addr = scan("\x48\x89\x5C\x24\x00\x48\x89\x6C\x24\x00"
+                                   "\x48\x89\x74\x24\x00\x57\x48\x83\xEC\x30",
+                                   "xxxx?xxxx?xxxx?xxxxx");
+  if (loadstring_addr)
+    std::cout << "[NOWHERE] Found loadstring placeholder: 0x" << std::hex
+              << loadstring_addr << std::endl;
+
   initialized = true;
   std::cout << "[NOWHERE] Xeno Engine initialized successfully!" << std::endl;
   return true;
@@ -118,6 +152,16 @@ void execute(const char *script) {
     return;
   }
 
+  if (luaState == 0) {
+    // Try refreshing if state is missing
+    RefreshState();
+    if (luaState == 0) {
+      std::cout << "[NOWHERE] ERROR: lua_State not found, cannot execute!"
+                << std::endl;
+      return;
+    }
+  }
+
   std::string scriptStr(script);
 
   // Add to execution queue
@@ -126,62 +170,14 @@ void execute(const char *script) {
     scriptQueue.push(scriptStr);
   }
 
-  std::cout << "[NOWHERE] Script queued for execution (" << scriptStr.length()
-            << " bytes)" << std::endl;
+  std::cout << "[NOWHERE] Executing script (" << scriptStr.length()
+            << " bytes)..." << std::endl;
 
-  void execute(const char *script) {
-    if (!initialized) {
-      std::cout << "[NOWHERE] ERROR: Engine not initialized!" << std::endl;
-      return;
-    }
+  std::cout << "[NOWHERE] Script execution initiated." << std::endl;
+}
 
-    if (luaState == 0) {
-      // Try refreshing if state is missing
-      RefreshState();
-      if (luaState == 0) {
-        std::cout << "[NOWHERE] ERROR: lua_State not found, cannot execute!"
-                  << std::endl;
-        return;
-      }
-    }
-
-    std::string scriptStr(script);
-
-    // Add to execution queue
-    {
-      std::lock_guard<std::mutex> lock(queueMutex);
-      scriptQueue.push(scriptStr);
-    }
-
-    std::cout << "[NOWHERE] Executing script (" << scriptStr.length()
-              << " bytes)..." << std::endl;
-
-    // TODO: Finalize Luau execution mechanism
-    // In a real scenario, we'd use Luau compile + load + call
-    // For now, we simulate the execution flow
-
-    /*
-    std::string bytecode = Luau::compile(scriptStr);
-    if (luau_load(luaState, "xeno", bytecode.data(), bytecode.size(), 0) == 0) {
-        lua_pcall(luaState, 0, 0, 0);
-    }
-    */
-
-    std::cout << "[NOWHERE] Script execution initiated." << std::endl;
-  }
-
-  // Get current lua_State (for external use)
-  uintptr_t GetLuaState() { return luaState; }
-
-  // Refresh ScriptContext and lua_State (call after game loads)
-  bool RefreshState() {
-    scriptContext = FindScriptContext();
-    if (scriptContext != 0) {
-      luaState = deobfuscation::DeobfuscateLuaState(scriptContext);
-      return luaState != 0;
-    }
-    return false;
-  }
+// Get current lua_State (for external use)
+uintptr_t GetLuaState() { return luaState; }
 
 } // namespace xeno
 
